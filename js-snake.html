@@ -12,7 +12,7 @@
     let ctx = document.getElementById('ctx').getContext('2d');
     let WIDTH = 500;
     let HEIGHT = 500;
-    let snakeList, foodList, direction, eaten, intervalVar;
+    let snakeList, foodList, direction, eaten, intervalVar, score;
     ctx.font = "20px Calibri";
 
     let snakeBody = {
@@ -159,6 +159,7 @@
         if (testCollision(snakeList[0], foodList[0])) { //collision of food and snake head + create new head unshift
             foodList = [];
             eaten = true;
+            score += 1;
             let new_X, new_Y;
             if (direction == 0) {
                 new_X = snakeList[0].x -10; //food will appear IN FRONT of the head, and then its added to array unshift
@@ -178,6 +179,7 @@
             }
             snakeList.unshift({x:new_X, y:new_Y}); //so this will be the new head of snake
         }
+        ctx.fillText('Score: ' + score, 420, 40)
         isGameOver();
         checkSnakePosition();
         updateSnakeList();
@@ -193,6 +195,7 @@
         foodList = [];
         direction = 99;
         eaten = true;
+        score = 0;
         intervalVar = setInterval(updateSnakePosition, 25); //setInterval returns a unique integer that we can catch and then use to stop it
     }
 
