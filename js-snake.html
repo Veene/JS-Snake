@@ -12,7 +12,7 @@
     let ctx = document.getElementById('ctx').getContext('2d');
     let WIDTH = 500;
     let HEIGHT = 500;
-    let snakeList, foodList, direction, eaten;
+    let snakeList, foodList, direction, eaten, intervalVar;
     ctx.font = "20px Calibri";
 
     let snakeBody = {
@@ -46,11 +46,18 @@
         }
     }
 
-    testCollision = function(rect1, rect2) {
+    testCollision = function(rect1, rect2) { //food + head collision)
         return ((rect1.x <= rect2.x + food.width) &&
                 (rect2.x <= rect1.x + snakeBody.width) &&
                 (rect1.y <= rect2.y + food.height) &&
                 (rect2.y <= rect1.y + snakeBody.height));
+    }
+
+    testCollisionSnake = function(snake1, snake2) { //different way of colision
+        return((Math.abs(snake1.x-snake2.x)<5) &&
+                (Math.abs(snake1.y-snake2.y)<5)
+
+        );
     }
 
     drawSnake = function (sb, i) {
@@ -126,6 +133,18 @@
         }
     }
 
+    isGameOver = function () {
+        for (i in snakeList) {
+            if (i==0) {
+                continue;
+            }
+            if (testCollisionSnake(snakeList[0], snakeList[i])) {
+                clearInterval(intervalVar);
+                return;
+            }
+        }
+    }
+
     updateSnakePosition = function() {
         ctx.clearRect(0,0,WIDTH,HEIGHT); //erase full canvas and redraw it
         while(eaten) {
@@ -137,7 +156,7 @@
         foodList.forEach(drawFood);
         snakeList.forEach(drawSnake);
 
-        if (testCollision(snakeList[0], foodList[0])) {
+        if (testCollision(snakeList[0], foodList[0])) { //collision of food and snake head + create new head unshift
             foodList = [];
             eaten = true;
             let new_X, new_Y;
@@ -159,7 +178,7 @@
             }
             snakeList.unshift({x:new_X, y:new_Y}); //so this will be the new head of snake
         }
-
+        isGameOver();
         checkSnakePosition();
         updateSnakeList();
 
@@ -174,7 +193,7 @@
         foodList = [];
         direction = 99;
         eaten = true;
-        setInterval(updateSnakePosition, 25);
+        intervalVar = setInterval(updateSnakePosition, 25); //setInterval returns a unique integer that we can catch and then use to stop it
     }
 
     startGame();
